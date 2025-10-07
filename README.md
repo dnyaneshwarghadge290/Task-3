@@ -1,35 +1,45 @@
-# Simple Calculator in Python
-num1 = float(input("Enter the first number: "))
-num2 = float(input("Enter the second number: "))
+from collections import defaultdict
 
-print("Select operation:")
-print("1. Addition (+)")
-print("2. Subtraction (-)")
-print("3. Multiplication (*)")
-print("4. Division (/)")
+def min_orbs(potion, recipes, memo):
+   
+    if potion in memo:
+        return memo[potion]
 
+   
+    if potion not in recipes:
+        memo[potion] = 0
+        return 0
 
-choice = input("Enter your choice (1/2/3/4): ")
+    min_cost = float("inf")
+    for ing_list in recipes[potion]:
+         cost = len(ing_list) - 1            
+valid = True
+        for ing in ing_list:
+            c = min_orbs(ing, recipes, memo)
+            if c == float("inf"):  
+                valid = False
+                break
+            cost += c
+        if valid:
+            min_cost = min(min_cost, cost)
 
-if choice == '1':
-    result = num1 + num2
-    operation = '+'
-elif choice == '2':
-    result = num1 - num2
-    operation = '-'
-elif choice == '3':
-    result = num1 * num2
-    operation = '*'
-elif choice == '4':
-    if num2 != 0:
-        result = num1 / num2
-        operation = '/'
-    else:
-        result = "Error! Division by zero."
-        operation = '/'
-else:
-    result = "Invalid choice"
-    operation = ''
+    memo[potion] = min_cost
+    return min_cost
 
-print(f"{num1} {operation} {num2} = {result}")
+def solve():
+    n = int(input().strip())
+    recipes = defaultdict(list)
 
+    for _ in range(n):
+        line = input().strip()
+        potion, rhs = line.split("=")
+        ingredients = rhs.split("+")
+        recipes[potion].append(ingredients)
+
+    target = input().strip()
+    memo = {}
+    ans = min_orbs(target, recipes, memo)
+    print(ans if ans != float("inf") else -1)
+
+if __name__ == "__main__":
+    solve()
